@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",  // Cambiar "CommonJS" a "commonjs"
+    "module": "ESNext",  // o "ES6" según prefieras
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
