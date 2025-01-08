@@ -1,7 +1,6 @@
 // routers/food.router.ts
 import { Router } from 'express';
-import * as FoodController from '../controllers/food.controller.js';
-
+import * as FoodController from '../controllers/food.controller';
 const router = Router();
 router.get('/base', FoodController.getBase);
 router.get('/', FoodController.getAllFoods);
@@ -18,7 +17,6 @@ router.delete('/:foodId', FoodController.deleteFood);
  *   name: Alimentos
  *   description: Endpoints para la gestión de platillos de comida
  */
-
 /**
  * @swagger
  * components:
@@ -49,8 +47,6 @@ router.delete('/:foodId', FoodController.deleteFood);
  *         cookTime:
  *           type: string
  */
-
-
 /**
  * @swagger
  * /api/foods:
@@ -108,7 +104,6 @@ router.delete('/:foodId', FoodController.deleteFood);
  *       400:
  *         description: Error al crear el alimento
  */
-
 /**
  * @swagger
  * /api/foods/search/{searchTerm}:
@@ -128,7 +123,6 @@ router.delete('/:foodId', FoodController.deleteFood);
  *       500:
  *         description: Error al buscar alimentos
  */
-
 /**
  * @swagger
  * /api/foods/{foodId}:
@@ -218,5 +212,4 @@ router.delete('/:foodId', FoodController.deleteFood);
  *       404:
  *         description: Alimento no encontrado
  */
-
 export default router;

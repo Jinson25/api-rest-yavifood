@@ -1,0 +1,232 @@
+import express from 'express';
+import { sample_users } from '../data';
+import { UserModel } from '../models/user.models';
+import { HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED } from '../constants/http_status';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { Types } from 'mongoose';
+
+
+export const getBase = async (req, res) => {
+    const usersCount = await UserModel.countDocuments();
+    if (usersCount > 0) {
+        res.send('Base de usuario cargada anteriormente');
+        return;
+    }
+
+    await UserModel.create(sample_users);
+    res.send('Usuarios cargados');
+};
+
+export const login = async (req, res) => {
+    const { email, password } = req.body;
+    const user = await UserModel.findOne({ email });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+        res.send(generateTokenResponse(user));
+    } else {
+        res.status(HTTP_BAD_REQUEST).send('El email o password no son válidos');
+    }
+};
+
+export const register = async (req, res) => {
+    try {
+        const { name, email, password, address } = req.body;
+
+        if (!name || !email || !password || !address) {
+            res.status(400).json({ error: 'Todos los campos son obligatorios' });
+            return;
+        }
+
+        const existingUser = await UserModel.findOne({ email });
+        if (existingUser) {
+            res.status(400).json({ error: 'El usuario ya existe, por favor inicie sesión' });
+            return;
+        }
+
+        const encryptedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = {
+            name,
+            email: email.toLowerCase(),
+            password: encryptedPassword,
+            address,
+            isAdmin: false
+        };
+
+        const dbUser = await UserModel.create(newUser);
+        res.status(200).json({ message: 'Usuario registrado exitosamente', user: dbUser });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error en el servidor' });
+    }
+};
+
+export const adminDashboard = async (req, res) => {
+    if (req.user && req.user.isAdmin) {
+        res.send('Bienvenido al panel de control de administrador');
+    } else {
+        res.status(HTTP_UNAUTHORIZED).send('Acceso no autorizado');
+    }
+};
+
+export const userProfile = async (req, res) => {
+    if (req.user) {
+        res.send('Bienvenido a tu perfil de cliente');
+    } else {
+        res.status(HTTP_UNAUTHORIZED).send('Acceso no autorizado');
+    }
+};
+
+export const getAllUsers = async (req, res) => {
+    const users = await UserModel.find();
+    res.send(users);
+};
+
+export const getUserById = async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        const isValidObjectId = Types.ObjectId.isValid(userId);
+        if (!isValidObjectId) {
+            throw new Error('El tipo id no es formato correcto de mongosse');
+        }
+
+        const user = await UserModel.findById(userId);
+
+        if (!user) {
+            res.status(HTTP_BAD_REQUEST).send('Usuario no encontrado');
+        } else {
+            res.send(user);
+        }
+    } catch (error) {
+        res.status(400).json({ error: (error).message });
+    }
+};
+
+export const updateUser = async (req, res) => {
+    const { name, email, address } = req.body;
+    const userId = req.params.id;
+
+    try {
+        const isValidObjectId = Types.ObjectId.isValid(userId);
+        if (!isValidObjectId) {
+            throw new Error('El tipo id no es formato correcto de mongosse');
+        }
+
+        const user = await UserModel.findById(userId);
+
+        if (user) {
+            user.name = name;
+            user.email = email.toLowerCase();
+            user.address = address;
+
+            await user.save();
+            res.send(user);
+        } else {
+            res.status(HTTP_BAD_REQUEST).send('Usuario no encontrado');
+        }
+    } catch (error) {
+        res.status(400).json({ error: (error).message });
+    }
+};
+
+export const deleteUser = async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        const isValidObjectId = Types.ObjectId.isValid(userId);
+        if (!isValidObjectId) {
+            throw new Error('El tipo id no es formato correcto de mongosse');
+        }
+
+        const user = await UserModel.findById(userId);
+
+        if (user) {
+            await UserModel.deleteOne({ _id: user._id });
+            res.send('Usuario eliminado exitosamente');
+        } else {
+            res.status(HTTP_BAD_REQUEST).send('Usuario no encontrado');
+        }
+    } catch (error) {
+        res.status(400).json({ error: (error).message });
+    }
+};
+export const updateProfile = async (req, res) => {
+    try {
+        const { name, address } = req.body;
+
+        if (!name || !address) {
+            res.status(400).json({ error: 'Nombre y dirreccion es necesario' });
+            return;
+        }
+        if (!req.user || !req.user.id) {
+            res.status(HTTP_UNAUTHORIZED).send('Usuario no autorizado');
+            return;
+        }
+        const user = await UserModel.findByIdAndUpdate(
+            req.user.id,
+            { name, address },
+            { new: true }
+        );
+
+        if (user) {
+            res.send(generateTokenResponse(user));
+        } else {
+            res.status(HTTP_BAD_REQUEST).send('User no encontrado');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+export const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const user = await UserModel.findById(req.user.id);
+
+        if (!user) {
+            res.status(HTTP_BAD_REQUEST).send('Cambio de contraseña fallido');
+            return;
+        }
+
+        const equal = await bcrypt.compare(currentPassword, user.password);
+
+        if (!equal) {
+            res.status(HTTP_BAD_REQUEST).send('¡La contraseña actual no es correcta!');
+            return;
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        res.send();
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const generateTokenResponse = (user) => {
+    const token = jwt.sign(
+        {
+            id: user.id,
+            email: user.email,
+            isAdmin: user.isAdmin,
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: '1h',
+        }
+    );
+    
+    return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        address: user.address,
+        isAdmin: user.isAdmin,
+        token: token,
+    };
+};

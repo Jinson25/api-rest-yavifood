@@ -6,23 +6,23 @@ import asyncHandler from 'express-async-handler';
 import { sample_foods } from '../data';
 import { Types } from 'mongoose';
 
-export const getBase = asyncHandler(async (req: Request, res: Response) => {
+export const getBase = asyncHandler(async (req, res) => {
     await FoodModel.create(sample_foods);
     res.send('Base cargada!');
 });
 
-export const getAllFoods = asyncHandler(async (req: Request, res: Response) => {
+export const getAllFoods = asyncHandler(async (req, res) => {
     const foods = await FoodModel.find();
     res.send(foods);
 });
 
-export const searchFoods = asyncHandler(async (req: Request, res: Response) => {
+export const searchFoods = asyncHandler(async (req, res) => {
     const searchRegex = new RegExp(req.params.searchTerm, 'i');
     const foods = await FoodModel.find({ name: { $regex: searchRegex } });
     res.send(foods);
 });
 
-export const getTags = asyncHandler(async (req: Request, res: Response) => {
+export const getTags = asyncHandler(async (req, res) => {
     const tags = await FoodModel.aggregate([
         {
             $unwind: '$tags',
@@ -45,12 +45,12 @@ export const getTags = asyncHandler(async (req: Request, res: Response) => {
     res.send(tags);
 });
 
-export const getFoodsByTag = asyncHandler(async (req: Request, res: Response) => {
+export const getFoodsByTag = asyncHandler(async (req, res) => {
     const foods = await FoodModel.find({ tags: req.params.tagName });
     res.send(foods);
 });
 
-export const getFoodById = asyncHandler(async (req: Request, res: Response) => {
+export const getFoodById = asyncHandler(async (req, res) => {
     const foodId = req.params.foodId;
 
     try {
@@ -67,18 +67,18 @@ export const getFoodById = asyncHandler(async (req: Request, res: Response) => {
             res.send(food);
         }
     } catch (error) {
-        res.status(400).json({ error: (error as Error).message });
+        res.status(400).json({ error: (error).message });
     }
 });
 
-export const createFood = asyncHandler(async (req: Request, res: Response) => {
-    const newFood: Food = req.body;
+export const createFood = asyncHandler(async (req, res) => {
+    const newFood = req.body;
     const createdFood = await FoodModel.create(newFood);
     res.send(createdFood);
 });
 
-export const updateFood = asyncHandler(async (req: Request, res: Response) => {
-    const updateFood: Food = req.body;
+export const updateFood = asyncHandler(async (req, res) => {
+    const updateFood = req.body;
     const foodId = req.params.foodId;
 
     try {
@@ -95,11 +95,11 @@ export const updateFood = asyncHandler(async (req: Request, res: Response) => {
             res.send(result);
         }
     } catch (error) {
-        res.status(400).json({ error: (error as Error).message });
+        res.status(400).json({ error: (error).message });
     }
 });
 
-export const deleteFood = asyncHandler(async (req: Request, res: Response) => {
+export const deleteFood = asyncHandler(async (req, res) => {
     const foodId = req.params.foodId;
 
     try {
@@ -116,6 +116,6 @@ export const deleteFood = asyncHandler(async (req: Request, res: Response) => {
             res.json({ message: 'Platillo eliminado exitosamente' });
         }
     } catch (error) {
-        res.status(400).json({ error: (error as Error).message });
+        res.status(400).json({ error: (error).message });
     }
 });
