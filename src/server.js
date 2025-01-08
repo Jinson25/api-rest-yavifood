@@ -26,7 +26,7 @@ const swaggerSpec = {
         openapi: '3.0.0',
         info: {
             title: 'BackEnd YaviFood API',
-            description: 'Grupo 5: Jinson Medina, Angeles Quinatoa, Alessandro Cisnero, Mishel Abendaño',
+            description: 'Grupo 5: Jinson Medina',
             version: '1.0.0',
         },
         servers: [
@@ -35,7 +35,7 @@ const swaggerSpec = {
             }
         ]
     },
-    apis: [`${path.join(__dirname, './routers/*.ts')}`], // Rutas de tus archivos TypeScript que contienen JSDoc
+    apis: [`${path.join(__dirname, './routers/*.js')}`], // Rutas de tus archivos TypeScript que contienen JSDoc
 };
 
 // Configuración del puerto del servidor
