@@ -1,13 +1,13 @@
 import {Schema, model} from 'mongoose';
 
-export interface User{
-    token: string;
-    id:string;
-    email:string;
-    password: string;
-    name:string;
-    address:string;
-    isAdmin:boolean;
+const User = {
+    token: string,
+    id:string,
+    email:string,
+    password: string,
+    name:string,
+    address:string,
+    isAdmin:boolean,
 }
 
 export const UserSchema = new Schema<User>({

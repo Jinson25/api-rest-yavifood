@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import * as UserController from '../controllers/user.controller';
+import * as UserController from '../controllers/user.controller.js';
 import asyncHandler from 'express-async-handler';
 const router = Router();
-import auth from '../middlewares/auth.mid'
+import auth from '../middlewares/auth.mid.js'
 
 // Cargar datos de usuarios
 

@@ -1,7 +1,7 @@
-export const enums = {
-    NEW: 'NUEVO',
-    PAYED: 'PAGADO',
-    SHIPPED: 'ENVIADO',
-    CANCELED: 'CANCELADO',
-    REFUNDED: 'REEMBOLSADO',
-}
+export const OrderStatus = {
+    NEW: 'NEW',
+    PAID: 'PAID',
+    SHIPPED: 'SHIPPED',
+    CANCELED: 'CANCELED',
+    DELIVERED: 'DELIVERED'
+};

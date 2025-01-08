@@ -1,9 +1,8 @@
 // controllers/food.controller.ts
 
-import { Request, Response } from 'express';
-import { FoodModel, Food } from '../models/food.model';
+import { FoodModel } from '../models/food.model.js';
 import asyncHandler from 'express-async-handler';
-import { sample_foods } from '../data';
+import { sample_foods } from '../data.js';
 import { Types } from 'mongoose';
 
 export const getBase = asyncHandler(async (req, res) => {
@@ -60,14 +59,9 @@ export const getFoodById = asyncHandler(async (req, res) => {
         }
 
         const food = await FoodModel.findById(foodId);
-
-        if (!food) {
-            res.status(404).send('Platillo no encontrado');
-        } else {
-            res.send(food);
-        }
+        // ...existing code...
     } catch (error) {
-        res.status(400).json({ error: (error).message });
+        res.status(400).json({ error: error.message });
     }
 });
 

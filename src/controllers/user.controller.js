@@ -1,7 +1,7 @@
 import express from 'express';
-import { sample_users } from '../data';
-import { UserModel } from '../models/user.models';
-import { HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED } from '../constants/http_status';
+import { sample_users } from '../data.js';
+import { UserModel } from '../models/user.models.js';
+import { HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED } from '../constants/http_status.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';

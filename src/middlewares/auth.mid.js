@@ -1,5 +1,6 @@
-import { verify } from "jsonwebtoken";
-import { HTTP_UNAUTHORIZED } from "../constants/http_status";
+import pkg from 'jsonwebtoken';
+const { verify } = pkg;
+import { HTTP_UNAUTHORIZED } from "../constants/http_status.js";
 
 export default (req, res, next) => {
     const token = req.headers.access_token;
@@ -7,15 +8,10 @@ export default (req, res, next) => {
 
     try {
         const decodedUser = verify(token, process.env.JWT_SECRET);
-        
         req.user = decodedUser;
-        //const user = { ...decodedUser, isAdmin: decodedUser.isAdmin };
-        //req.user = user;
-
     } catch (error) {
         console.log("algo anda mal")
         return res.status(HTTP_UNAUTHORIZED).send("Token inválido o expirado");
-
     }
 
     return next();

@@ -6,15 +6,15 @@
  */
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
-import { HTTP_BAD_REQUEST } from '../constants/http_status';
-import { OrderStatus } from '../constants/order_status';
-import { OrderModel } from '../models/order.model';
-import auth from '../middlewares/auth.mid';
+import { HTTP_BAD_REQUEST } from '../constants/http_status.js';
+import { OrderStatus } from '../constants/order_status.js';
+import { OrderModel } from '../models/order.model.js';
+import auth from '../middlewares/auth.mid.js';
 
 const router = Router();
 router.use(auth);
 
-router.post('/create', asyncHandler(async (req: any, res: any) => {
+router.post('/create', asyncHandler(async (req, res) => {
   const requestOrder = req.body;
 
   if (requestOrder.items.length <= 0) {
@@ -32,24 +32,24 @@ router.post('/create', asyncHandler(async (req: any, res: any) => {
   res.send(newOrder);
 }));
 
-router.get('/', asyncHandler(async (req: any, res: any) => {
+router.get('/', asyncHandler(async (req, res) => {
   const orders = await OrderModel.find();
   res.send(orders);
 }));
 
-router.get('/newOrderForCurrentUser', asyncHandler(async (req: any, res) => {
+router.get('/newOrderForCurrentUser', asyncHandler(async (req, res) => {
   const order = await getNewOrderForCurrentUser(req);
   if (order) res.send(order);
   else res.status(HTTP_BAD_REQUEST).send();
 }));
 
-router.get('/user/:userId', asyncHandler(async (req: any, res: any) => {
+router.get('/user/:userId', asyncHandler(async (req, res) => {
   const userId = req.params.userId;
   const orders = await OrderModel.find({ user: userId });
   res.send(orders);
 }));
 
-router.post('/pay', asyncHandler(async (req: any, res) => {
+router.post('/pay', asyncHandler(async (req, res) => {
   const { paymentId } = req.body;
   const order = await getNewOrderForCurrentUser(req);
   if (!order) {
@@ -71,7 +71,8 @@ router.get('/track/:id', asyncHandler(async (req, res) => {
 
 export default router;
 
-async function getNewOrderForCurrentUser(req: any) {
+
+async function getNewOrderForCurrentUser(req) {
   if (!req.user || !req.user.id) {
     return null;
   }

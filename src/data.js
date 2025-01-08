@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-export const sample_foods: any[] = [
+export const sample_foods = [
   {
     id: '1',
     name: 'Caldo de Bolas',
@@ -344,7 +344,7 @@ export const sample_foods: any[] = [
 
 ]
 
-export const sample_tags: any[] = [
+export const sample_tags= [
   { name: 'All', count: 6 },
   { name: 'ComidaRapida', count: 4 },
   { name: 'Postres', count: 2 },
@@ -355,7 +355,7 @@ export const sample_tags: any[] = [
   { name: 'Sopas', count: 1 },
 ]
 
-export const sample_users: any[] = [
+export const sample_users = [
   {
     name: "Angeles Quinatoa",
     email: "angeles@gmail.com",
